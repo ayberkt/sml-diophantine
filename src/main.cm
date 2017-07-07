@@ -2,3 +2,5 @@ Group is
   $/basis.cm
   utils.sml
   unify.sml
+  matching.sml
+  rewriting.sml
