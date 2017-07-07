@@ -11,11 +11,7 @@ structure Unify = struct
 
   fun toString (V (s, i)) = s
     | toString (f $ ts) =
-<<<<<<< HEAD
         f ^ "(" ^ intercalate ", " (List.map toString ts) ^ ")"
-=======
-        f ^ "(" ^ (intercalate ", " (List.map toString ts)) ^ ")"
->>>>>>> 53198f155ffe631e0cb5ae2a6ab189175ca4beb1
 
   fun indom x s = List.exists (fn (y, _) => x = y) s
 
