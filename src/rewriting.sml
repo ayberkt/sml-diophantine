@@ -20,6 +20,6 @@ structure Rewriting = struct
     [  ("foo" $ [], "bar" $ [])
     ]
 
-  val run = norm rules
+  val run = toString o (norm rules)
 
 end
