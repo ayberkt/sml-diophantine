@@ -9,6 +9,10 @@ structure Unify = struct
 
   type     subst = (vname * term) list
 
+  fun toString (V (s, i)) = s
+    | toString (f $ ts) =
+        f ^ "(" ^ (intercalate ", " (List.map toString ts)) ^ ")"
+
   fun indom x s = List.exists (fn (y, _) => x = y) s
 
   fun app ((y, t)::s) x = if x = y then t else app s x
