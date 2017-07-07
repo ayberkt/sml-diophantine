@@ -1,5 +1,6 @@
 structure Rewriting = struct
   open Matching
+  infix 3 $
 
   fun rewrite [] t = NONE
     | rewrite ((l, r)::R) t =
@@ -7,8 +8,8 @@ structure Rewriting = struct
         handle NoUnifier => rewrite R t
 
   fun norm R (V x) = V x
-    | norm R (T (f, ts)) =
-        let val u = T (f, List.map (norm R) ts)
+    | norm R (f $ ts) =
+        let val u = f $ List.map (norm R) ts
         in
           case rewrite R u of
             SOME u' => norm R u'
@@ -16,10 +17,9 @@ structure Rewriting = struct
         end
 
   val rules =
-    [  (T ("foo", []), T ("bar", []))
+    [  ("foo" $ [], "bar" $ [])
     ]
 
-  fun run tm =
-    norm [(T ("foo", []), T ("bar", []))] tm
+  val run = norm rules
 
 end

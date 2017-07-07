@@ -1,5 +1,6 @@
 structure Matching = struct
   open Unify
+  infix 3 $
 
   fun matchs ([], s) = s
     | matchs ((V x, t)::S, s) =
@@ -10,7 +11,7 @@ structure Matching = struct
           else raise NoUnifier
         else matchs (S, (x, t)::s)
     | matchs ((t, V x)::S, s) = raise NoUnifier
-    | matchs ((T (f, ts), T (g, us))::S, s) =
+    | matchs ((f $ ts, g $ us)::S, s) =
         if f = g
         then matchs(zip (ts, us) @ S, s)
         else raise NoUnifier

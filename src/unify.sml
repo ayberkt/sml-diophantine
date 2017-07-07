@@ -4,7 +4,9 @@ structure Unify = struct
   structure S = String
 
   type     vname = string * int
-  datatype term  = V of vname | T of string * term list
+  datatype term  = V of vname | $ of string * term list
+  infix 3 $
+
   type     subst = (vname * term) list
 
   fun indom x s = List.exists (fn (y, _) => x = y) s
@@ -12,10 +14,10 @@ structure Unify = struct
   fun app ((y, t)::s) x = if x = y then t else app s x
 
   fun lift s (V x) = if indom x s then app s x else V x
-    | lift s (T (f, ts)) = T (f, L.map (lift s) ts)
+    | lift s (f $ ts) = f $ (L.map (lift s) ts)
 
   fun occurs x (V y) = x = y
-    | occurs x (T(_, ts)) = List.exists (occurs x) ts
+    | occurs x (_ $ ts) = List.exists (occurs x) ts
 
   exception NoUnifier
 
@@ -23,7 +25,7 @@ structure Unify = struct
     | solve ((V x, t)::S, s) =
         if V x = t then solve (S, s) else elim (x, t, S, s)
     | solve ((t, V x)::S, s) = elim (x, t, S, s)
-    | solve ((T (f, ts), T (g, us))::S, s) =
+    | solve ((f $ ts, g $ us)::S, s) =
         case String.compare (f, g) of
           EQUAL => solve (zip (ts, us) @ S, s)
         | _ => raise NoUnifier
