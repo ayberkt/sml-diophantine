@@ -10,6 +10,8 @@ functor StackFn(M : ID) : STACK = struct
 
   fun push x = store := x::(!store)
 
+  fun height () = List.length (!store)
+
   fun pop () =
     if List.null (!store)
     then raise EmptyStack
@@ -21,3 +23,5 @@ functor StackFn(M : ID) : STACK = struct
       end
 
 end
+
+structure IntStack = StackFn(struct type t = int end)
