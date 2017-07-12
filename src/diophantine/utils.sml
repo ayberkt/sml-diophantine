@@ -6,7 +6,7 @@ structure Utils = struct
     else
       let
         fun range' 0 = [0]
-          | range' n = n::range (n-1)
+          | range' n = (range (n-1))@[n]
       in
         range' n
       end
@@ -22,7 +22,7 @@ structure Utils = struct
           else raise Fail "replicateStr given negative number"
       end
 
-  val curry : ('a * 'b -> c) -> 'a -> 'b -> 'c =
+  val curry : ('a * 'b -> 'c) -> 'a -> 'b -> 'c =
     fn f => fn x => fn y => f (x, y)
 
   val uncurry : ('a -> 'b -> 'c) -> ('a * 'b -> 'c) =
