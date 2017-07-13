@@ -4,6 +4,9 @@ structure Solver = struct
   structure L = List
   type 'a vector = 'a A.array
 
+  fun $ (f, x) = f x
+  infix 0 $
+
   val vector : int -> 'a list -> 'a A.array =
     fn n => fn elems =>
       A.fromList (List.take (elems, n))
@@ -58,11 +61,20 @@ structure Solver = struct
   val newMinimalResults : int vector -> int -> array_set -> array_set -> int list list =
     fn ar => fn n => fn ars1 => fn ars2 => raise Fail "TODO"
 
-  val breadthFirstSearch : int array -> int -> array_set -> array_set =
-    fn ar => fn n => fn ars => raise Fail "TODO"
   val prod : int vector -> int vector -> int =
     fn x => fn y =>
       L.foldl op+ 0 (List.map (fn i => A.sub (x, i) * A.sub (y, i)) (indices x))
+
+  val breadthFirstSearch : int vector -> int -> array_set -> array_set =
+    fn v => fn c => fn a =>
+      let
+        val f : int vector -> array_set -> array_set = fn x => fn acc =>
+          L.foldl (uncurry o flip $ AS.insert) acc
+            (L.map (fn j => (A.update (x, j, A.sub (x, j)+1); x))
+              ((L.filter (fn k => ((prod v x - c) * A.sub (v, k)) < 0) (indices x))))
+      in
+        AS.foldl (uncurry f) AS.empty a
+      end
 
   val linDiaphEq :  int list -> int -> int list list =
     fn v => fn c =>
