@@ -1,6 +1,8 @@
 structure Solver = struct
   open Utils
   structure A = Array
+  structure L = List
+  type 'a array = 'a A.array
 
   val vector : int -> 'a list -> 'a A.array =
     fn n => fn elems =>
@@ -28,15 +30,29 @@ structure Solver = struct
     fun eq (a1, a2) = EQUAL = compare (a1, a2)
   end
 
-  structure ArraySet = ListSet(structure Elem = IntArrayOrdered)
-  type array_set = ArraySet.set
+  structure AS = ListSet(structure Elem = IntArrayOrdered)
+  type array_set = AS.set
 
-  (*val basis : int -> array_set =
+  fun prArray ar =
+    let
+      fun prArray' () =
+        Array.appi (fn (i, x) => (print (Int.toString x ^ " | "); ())) ar
+    in
+      (prArray' (); print "\n")
+    end
+
+  (* Construct the basis vectors for an n-dimensional space. *)
+  val basis : int -> array_set =
     fn n =>
       let
-        val z = vector n (replicate n 0)
+        val zeros  = L.map (fn i => vector i (replicate i 0)) (replicate n n)
+        val arrays = L.mapi (fn (i, xs) => (A.update (xs, i, 1); xs)) zeros
+        val toSet  = L.foldl (fn (x, y) => AS.insert y x) AS.empty
+        val result = toSet arrays
+        (*val _ = printLn (Int.toString (AS.size result) ^ " many arrays in the set.");*)
+        val _ = AS.app prArray result;
       in
-        List.app
-      end*)
+        toSet arrays
+      end
 
 end
