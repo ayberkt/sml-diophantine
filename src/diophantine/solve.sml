@@ -60,6 +60,9 @@ structure Solver = struct
 
   val breadthFirstSearch : int array -> int -> array_set -> array_set =
     fn ar => fn n => fn ars => raise Fail "TODO"
+  val prod : int vector -> int vector -> int =
+    fn x => fn y =>
+      L.foldl op+ 0 (List.map (fn i => A.sub (x, i) * A.sub (y, i)) (indices x))
 
   val linDiaphEq :  int list -> int -> int list list =
     fn v => fn c =>
