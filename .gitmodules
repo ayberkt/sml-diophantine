@@ -1,0 +1,4 @@
+[submodule "lib/cmlib"]
+	path = lib/cmlib
+	url = https://github.com/ayberkt/cmlib
+	branch = develop
