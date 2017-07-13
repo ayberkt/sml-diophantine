@@ -28,5 +28,8 @@ structure Utils = struct
   val uncurry : ('a -> 'b -> 'c) -> ('a * 'b -> 'c) =
     fn f => fn (x, y) => f x y
 
+  val flip : ('a -> 'b -> 'c) -> ('b -> 'a -> 'c) =
+    fn f => fn x => fn y => f y x
+
   val printLn = fn s => print (s ^ "\n")
 end
