@@ -44,13 +44,15 @@ structure Solver = struct
       (prArray' (); print "\n")
     end
 
+  val toSet  : AS.elem list -> array_set =
+    L.foldl (fn (x, y) => AS.insert y x) AS.empty
+
   (* Construct the basis vectors for an n-dimensional space. *)
   val basis : int -> array_set =
     fn n =>
       let
         val zeros  = L.map (fn i => vector i (replicate i 0)) (replicate n n)
         val arrays = L.mapi (fn (i, xs) => (A.update (xs, i, 1); xs)) zeros
-        val toSet  = L.foldl (fn (x, y) => AS.insert y x) AS.empty
         val result = toSet arrays
         (*val _ = printLn (Int.toString (AS.size result) ^ " many arrays in the set.");*)
         val _ = AS.app prArray result;
