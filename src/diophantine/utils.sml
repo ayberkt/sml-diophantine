@@ -1,4 +1,5 @@
 structure Utils = struct
+  structure A = Array
 
   fun range n =
     if n < 0
@@ -32,4 +33,9 @@ structure Utils = struct
     fn f => fn x => fn y => f y x
 
   val printLn = fn s => print (s ^ "\n")
+
+  val sum = List.foldl op+ 0
+
+  val indices = fn ar => (range o flip (curry op-) 1 o A.length) ar
+
 end
