@@ -62,6 +62,11 @@ structure Solver = struct
     fn ar => fn n => fn ars => raise Fail "TODO"
 
   val linDiaphEq :  int list -> int -> int list list =
-    fn v => fn c => raise "TODO"
+    fn v => fn c =>
+      let
+        val n = List.length v
+      in
+        newMinimalResults (vector n v) c (basis n) AS.empty
+      end
 
 end
