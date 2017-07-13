@@ -2,7 +2,7 @@ structure Solver = struct
   open Utils
   structure A = Array
   structure L = List
-  type 'a array = 'a A.array
+  type 'a vector = 'a A.array
 
   val vector : int -> 'a list -> 'a A.array =
     fn n => fn elems =>
@@ -55,7 +55,7 @@ structure Solver = struct
         toSet arrays
       end
 
-  val newMinimalResults : int array -> int -> array_set -> array_set -> int list list =
+  val newMinimalResults : int vector -> int -> array_set -> array_set -> int list list =
     fn ar => fn n => fn ars1 => fn ars2 => raise Fail "TODO"
 
   val breadthFirstSearch : int array -> int -> array_set -> array_set =
