@@ -60,9 +60,6 @@ structure Solver = struct
         toSet arrays
       end
 
-  val newMinimalResults : int vector -> int -> array_set -> array_set -> int list list =
-    fn ar => fn n => fn ars1 => fn ars2 => raise Fail "TODO"
-
   val prod : int vector -> int vector -> int =
     fn x => fn y =>
       L.foldl op+ 0 (List.map (fn i => A.sub (x, i) * A.sub (y, i)) (indices x))
