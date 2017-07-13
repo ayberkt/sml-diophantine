@@ -84,10 +84,12 @@ structure Solver = struct
   val breadthFirstSearch : int vector -> int -> array_set -> array_set =
     fn v => fn c => fn a =>
       let
+        val cis =
+          fn x =>
+            L.filter (fn k => ((prod v x - c) * A.sub (v, k)) < 0) (indices x)
         val f : int vector -> array_set -> array_set = fn x => fn acc =>
           L.foldl (uncurry o flip $ AS.insert) acc
-            (L.map (fn j => (A.update (x, j, A.sub (x, j)+1); x))
-              ((L.filter (fn k => ((prod v x - c) * A.sub (v, k)) < 0) (indices x))))
+            (L.map (fn j => (A.update (x, j, A.sub (x, j)+1); x)) (cis x))
       in
         AS.foldl (uncurry f) AS.empty a
       end
