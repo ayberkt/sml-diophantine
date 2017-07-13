@@ -55,4 +55,13 @@ structure Solver = struct
         toSet arrays
       end
 
+  val newMinimalResults : int array -> int -> array_set -> array_set -> int list list =
+    fn ar => fn n => fn ars1 => fn ars2 => raise Fail "TODO"
+
+  val breadthFirstSearch : int array -> int -> array_set -> array_set =
+    fn ar => fn n => fn ars => raise Fail "TODO"
+
+  val linDiaphEq :  int list -> int -> int list list =
+    fn v => fn c => raise "TODO"
+
 end
