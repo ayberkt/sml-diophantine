@@ -69,6 +69,18 @@ structure Solver = struct
 
   val lessEq : int vector -> int vector -> bool =
     fn x => fn y => IntArrayOrdered.compare (x, y) = LESS
+
+  (* Remove redundant branches. *)
+  val rmRedBrs : array_set -> array_set -> array_set =
+    fn a => fn m =>
+      let
+        val g : int vector -> int vector -> bool =
+          fn x => fn y => not (lessEq y x)
+        val f = fn x => AS.all (g x) m
+      in
+         toSet (L.filter f (AS.toList a))
+      end
+
   val breadthFirstSearch : int vector -> int -> array_set -> array_set =
     fn v => fn c => fn a =>
       let
