@@ -67,6 +67,8 @@ structure Solver = struct
     fn x => fn y =>
       L.foldl op+ 0 (List.map (fn i => A.sub (x, i) * A.sub (y, i)) (indices x))
 
+  val lessEq : int vector -> int vector -> bool =
+    fn x => fn y => IntArrayOrdered.compare (x, y) = LESS
   val breadthFirstSearch : int vector -> int -> array_set -> array_set =
     fn v => fn c => fn a =>
       let
