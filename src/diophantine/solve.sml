@@ -81,9 +81,12 @@ structure Solver = struct
   val linDiaphEq :  int list -> int -> int list list =
     fn v => fn c =>
       let
-        val n = List.length v
+        val n = L.length v
       in
         newMinimalResults (vector n v) c (basis n) AS.empty
       end
+
+  val newMinimalResults : int vector -> int -> array_set -> array_set -> int list list =
+    fn ar => fn n => fn ars1 => fn ars2 => raise Fail "TODO"
 
 end
