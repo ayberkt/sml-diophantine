@@ -1,4 +1,4 @@
 Group is
-  ../../lib/cmlib/cmlib.cm
+  ../lib/cmlib/cmlib.cm
   utils.sml
   solve.sml
