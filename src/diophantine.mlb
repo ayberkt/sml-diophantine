@@ -1,0 +1,56 @@
+local
+  basis l4 =
+    bas
+      (* ../../lib/cmlib/cmlib.cm ===> *) ../../lib/cmlib/cmlib.mlb
+    end
+in
+local
+   $(SML_LIB)/basis/pervasive.mlb
+   local
+      open l4
+   in
+      structure gs_0 = Array
+   end
+   local
+      open l4
+   in
+      structure gs_1 = List
+   end
+   local
+      structure Array = gs_0
+      structure List = gs_1
+      utils.sml
+   in
+      structure gs_2 = Utils
+   end
+   local
+      open l4
+   in
+      functor gs_3 = ListSet
+   end
+   local
+      open l4
+   in
+      signature gs_4 = ORDERED
+   end
+   local
+      open l4
+   in
+      structure gs_5 = Int
+   end
+   local
+      structure Array = gs_0
+      structure Int = gs_5
+      structure List = gs_1
+      functor ListSet = gs_3
+      signature ORDERED = gs_4
+      structure Utils = gs_2
+      solve.sml
+   in
+      structure gs_6 = Solver
+   end
+in
+   structure Solver = gs_6
+   structure Utils = gs_2
+end
+end

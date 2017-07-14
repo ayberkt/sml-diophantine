@@ -52,7 +52,7 @@ structure Solver = struct
     fn n =>
       let
         val zeros  = L.map (fn i => vector i (replicate i 0)) (replicate n n)
-        val arrays = L.mapi (fn (i, xs) => (A.update (xs, i, 1); xs)) zeros
+        val arrays = mapi (fn (i, xs) => (A.update (xs, i, 1); xs)) zeros
         val result = toSet arrays
         (*val _ = printLn (Int.toString (AS.size result) ^ " many arrays in the set.");*)
         val _ = AS.app prArray result;
@@ -105,7 +105,7 @@ structure Solver = struct
               end
           | loop (m : array_set) ((x : int vector)::xs) =
               if ((prod v x) = c) andalso (AS.all (fn p => p <> x) m)
-              then (A.toList x)::(loop (AS.insert m x) xs)
+              then (arrayToList x)::(loop (AS.insert m x) xs)
               else loop m xs
       in
         loop m (AS.toList a)
