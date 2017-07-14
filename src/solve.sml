@@ -2,14 +2,14 @@ structure Solver = struct
   open Utils
   structure A = Array
   structure L = List
+  structure I = Int
   type 'a vector = 'a A.array
 
   fun $ (f, x) = f x
   infix 0 $
 
   val vector : int -> 'a list -> 'a A.array =
-    fn n => fn elems =>
-      A.fromList (List.take (elems, n))
+    fn n => fn elems => A.fromList (L.take (elems, n))
 
   structure IntArrayOrdered
     :> ORDERED where type t = (int A.array) = struct
@@ -44,8 +44,8 @@ structure Solver = struct
       (prArray' (); print "\n")
     end
 
-  val toSet  : AS.elem list -> array_set =
-    L.foldl (fn (x, y) => AS.insert y x) AS.empty
+  val toSet : (int vector) list -> array_set
+    = L.foldl (fn (x, y) => AS.insert y x) AS.empty
 
   (* Construct the basis vectors for an n-dimensional space. *)
   val basis : int -> array_set =
@@ -64,49 +64,57 @@ structure Solver = struct
     fn x => fn y =>
       L.foldl op+ 0 (List.map (fn i => A.sub (x, i) * A.sub (y, i)) (indices x))
 
+  (*val lessEq : int vector -> int vector -> bool =*)
+    (*fn x => fn y => IntArrayOrdered.compare (x, y) = LESS*)
+
   val lessEq : int vector -> int vector -> bool =
-    fn x => fn y => IntArrayOrdered.compare (x, y) = LESS
+    fn x => fn y =>
+      L.all (fn i => A.sub (x, i) <= A.sub (y, i)) (indices x)
 
   (* Remove redundant branches. *)
   val rmRedBrs : array_set -> array_set -> array_set =
     fn a => fn m =>
       let
-        val g : int vector -> int vector -> bool =
-          fn x => fn y => not (lessEq y x)
-        val f = fn x => AS.all (g x) m
+        val _ = printLn "`rmRedBrs` called"
+        val g = fn x => fn y => not (lessEq y x)
+        val f = fn x => List.all (g x) (AS.toList m)
       in
          toSet (L.filter f (AS.toList a))
       end
 
-  val breadthFirstSearch : int vector -> int -> array_set -> array_set =
+  val bfs : int vector -> int -> array_set -> array_set =
     fn v => fn c => fn a =>
       let
-        val cis =
-          fn x =>
-            L.filter (fn k => ((prod v x - c) * A.sub (v, k)) < 0) (indices x)
-        val f : int vector -> array_set -> array_set = fn x => fn acc =>
-          L.foldl (uncurry o flip $ AS.insert) acc
-            (L.map (fn j => (A.update (x, j, A.sub (x, j)+1); x)) (cis x))
+        val _ = printLn "bfs"
+        val _ = prArray v
+        val f : int vector * array_set -> array_set =
+          fn (x, acc) =>
+            L.foldl (uncurry o flip $ AS.insert) acc
+              (comprehend
+                (fn j => (A.update (x, j, A.sub (x, j)+1); x))
+                (indices x)
+                (fn k => ((prod v x - c) * A.sub (v, k)) < 0))
       in
-        AS.foldl (uncurry f) AS.empty a
+        AS.foldl f AS.empty a
       end
 
   fun newMinimalResults (v : int vector) (c : int) (a : array_set) (m : array_set) : int list list =
-    if AS.isEmpty m
-    then []
+    if AS.isEmpty a
+    then (printLn "nmr case 1"; [])
     else
       let
-        fun loop (m : array_set) [] =
+        val _ = printLn "nmr case 2"
+        fun loop m [] =
               let
-                val a'  = breadthFirstSearch v c a
-                val a'' = rmRedBrs a' m
-              in
-                newMinimalResults v c a'' m
-              end
-          | loop (m : array_set) ((x : int vector)::xs) =
-              if ((prod v x) = c) andalso (AS.all (fn p => p <> x) m)
-              then (arrayToList x)::(loop (AS.insert m x) xs)
-              else loop m xs
+                val _ = printLn "Gubar."
+                val a''  = rmRedBrs (bfs v c a) m
+              in newMinimalResults v c a'' m end
+          | loop m (x::xs) =
+              if (prod v x = c) andalso not (AS.member m x) then
+                (printLn "Answer found!!!";
+                 arrayToList x::loop (AS.insert m x) xs)
+              else
+                loop m xs
       in
         loop m (AS.toList a)
       end
@@ -115,8 +123,35 @@ structure Solver = struct
     fn v => fn c =>
       let
         val n = L.length v
+        val _ = printLn ("[solve] n = " ^ Int.toString n)
+        val bases = basis n
+        val _ =
+          if AS.isEmpty bases then
+            printLn "[1] bases is empty"
+          else
+            printLn "[1] bases is _not_ empty"
+        val arg1 = vector n v
+        val _ =
+          if AS.isEmpty bases then
+            printLn "[2] bases is empty"
+          else
+            printLn "[2] bases is _not_ empty"
       in
-        newMinimalResults (vector n v) c (basis n) AS.empty
+        newMinimalResults arg1 c bases AS.empty
       end
+
+  val prSolution = fn s =>
+    let
+      val showSolution = fn (xss : int list list) =>
+        if L.null xss
+        then "No solutions"
+        else
+          (concat o intersperse "; " o
+            map (concat o intersperse ", " o map Int.toString)) xss
+    in
+      printLn ("RESULT: " ^ (showSolution s))
+    end
+
+  val _ = prSolution (solve [3, 5, 7, 9] 12)
 
 end

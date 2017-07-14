@@ -46,6 +46,13 @@ structure Utils = struct
       in mapi' f xs 0 end
 
   val arrayToList : 'a Array.array -> 'a list =
-    fn v => Array.foldl op:: [] v
+    fn v => Array.foldr op:: [] v
+
+  fun intersperse y [] = []
+    | intersperse y [x] = [x]
+    | intersperse y (x::xs)=x::y::(intersperse y xs)
+
+  fun comprehend (f : 'a -> 'b) (xs : 'a list) (p : 'a -> bool) =
+    List.map f (List.filter p xs)
 
 end
