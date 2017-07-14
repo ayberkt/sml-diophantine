@@ -91,7 +91,6 @@ structure Solver = struct
         AS.foldl (uncurry f) AS.empty a
       end
 
-  val linDiaphEq :  int list -> int -> int list list =
   fun newMinimalResults (v : int vector) (c : int) (a : array_set) (m : array_set) : int list list =
     if AS.isEmpty m
     then []
@@ -111,6 +110,8 @@ structure Solver = struct
       in
         loop m (AS.toList a)
       end
+
+  val solve :  int list -> int -> int list list =
     fn v => fn c =>
       let
         val n = L.length v
