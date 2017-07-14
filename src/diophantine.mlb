@@ -1,7 +1,7 @@
 local
   basis l4 =
     bas
-      (* ../../lib/cmlib/cmlib.cm ===> *) ../../lib/cmlib/cmlib.mlb
+      (* ../lib/cmlib/cmlib.cm ===> *) ../lib/cmlib/cmlib.mlb
     end
 in
 local
