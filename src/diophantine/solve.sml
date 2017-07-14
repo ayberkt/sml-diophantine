@@ -92,14 +92,30 @@ structure Solver = struct
       end
 
   val linDiaphEq :  int list -> int -> int list list =
+  fun newMinimalResults (v : int vector) (c : int) (a : array_set) (m : array_set) : int list list =
+    if AS.isEmpty m
+    then []
+    else
+      let
+        fun loop (m : array_set) [] =
+              let
+                val a'  = breadthFirstSearch v c a
+                val a'' = rmRedBrs a' m
+              in
+                newMinimalResults v c a'' m
+              end
+          | loop (m : array_set) ((x : int vector)::xs) =
+              if ((prod v x) = c) andalso (AS.all (fn p => p <> x) m)
+              then (A.toList x)::(loop (AS.insert m x) xs)
+              else loop m xs
+      in
+        loop m (AS.toList a)
+      end
     fn v => fn c =>
       let
         val n = L.length v
       in
         newMinimalResults (vector n v) c (basis n) AS.empty
       end
-
-  val newMinimalResults : int vector -> int -> array_set -> array_set -> int list list =
-    fn ar => fn n => fn ars1 => fn ars2 => raise Fail "TODO"
 
 end
