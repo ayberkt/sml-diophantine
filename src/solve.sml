@@ -48,7 +48,7 @@ structure Solver = struct
   (* Matrix multiplication. *)
   infix <@>
   val op<@> : system * (int list) -> int list =
-    fn (a, xs) => List.foldr op<+> [] (LP.map op<*> (xs, a))
+    fn (a, xs) => foldr1 (curry op<+>) (LP.map op<*> (xs, a))
 
   infix <#>
   val op<#> = fn (xs, n) => L.nth (xs, n-1)
