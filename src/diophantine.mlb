@@ -26,12 +26,11 @@ local
    local
       open l4
    in
-      functor gs_3 = ListSet
+      structure gs_3 = ListPair
    end
    local
       open l4
    in
-      signature gs_4 = ORDERED
    end
    local
       open l4
@@ -42,8 +41,7 @@ local
       structure Array = gs_0
       structure Int = gs_5
       structure List = gs_1
-      functor ListSet = gs_3
-      signature ORDERED = gs_4
+      structure ListPair = gs_3
       structure Utils = gs_2
       solve.sml
    in
