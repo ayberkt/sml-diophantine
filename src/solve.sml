@@ -122,6 +122,9 @@ structure Solver = struct
         solve' [(replicate q 0, replicate q false)] []
       end
 
-    val _ = printSystem (solve example1)
+    fun main (name : string, args : string list) =
+      (printSystem (solve example1); 0)
+
+    val _ = SMLofNJ.exportFn ("solve", main)
 
 end
