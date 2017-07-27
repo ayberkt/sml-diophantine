@@ -28,6 +28,8 @@ structure Solver = struct
       print o prettySystem
     end
 
+  val example1 = [[~1, ~1], [1, 3], [2, ~2], [~3, ~1]]
+
   (* Vector addition *)
   infix <+>
   val op<+> : int list * int list -> int list =
