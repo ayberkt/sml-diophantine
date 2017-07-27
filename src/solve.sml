@@ -17,4 +17,14 @@ structure Solver = struct
   val op<*> : int * int list -> int list =
     fn (n, xs) => L.map (fn x => n * x) xs
 
+  (* Dot product of two vectors. *)
+  infix <dot>
+  val op<dot> : int list * int list -> int =
+    fn (xs, ys) => foldr op+ 0 (LP.map op* (xs, ys))
+
+  (* Matrix multiplication. *)
+  infix <@>
+  val op<@> : system * (int list) -> int list =
+    fn (a, xs) => foldr1 (curry op<+>) (LP.map op<*> (xs, a))
+
 end
