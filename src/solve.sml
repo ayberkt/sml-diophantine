@@ -121,4 +121,6 @@ structure Solver = struct
         solve' [(replicate q 0, replicate q false)] []
       end
 
+    val _ = printSystem (solve example1)
+
 end
