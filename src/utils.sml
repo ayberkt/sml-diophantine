@@ -55,4 +55,18 @@ structure Utils = struct
   fun comprehend (f : 'a -> 'b) (xs : 'a list) (p : 'a -> bool) =
     List.map f (List.filter p xs)
 
+  fun foldr1 (f : 'a -> 'a -> 'a) (xs : 'a list) : 'a =
+    let
+      val mf : 'a * 'a option -> 'a option =
+        fn (x, m) =>
+          SOME
+            (case m of
+               NONE => x
+             | SOME y => f x y)
+    in
+      case List.foldr mf NONE xs of
+          SOME a => a
+        | NONE => raise Fail "foldr1 got empty list"
+    end
+
 end
