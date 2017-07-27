@@ -1,157 +1,130 @@
 structure Solver = struct
   open Utils
-  structure A = Array
-  structure L = List
-  structure I = Int
-  type 'a vector = 'a A.array
+  structure A  = Array
+  structure L  = List
+  structure LP = ListPair
+  structure I  = Int
 
-  fun $ (f, x) = f x
-  infix 0 $
+  type system = int list list
+  type basis  = int list list
+  type stack  = (int list * bool list) list
 
-  val vector : int -> 'a list -> 'a A.array =
-    fn n => fn elems => A.fromList (L.take (elems, n))
+  val TODO = fn () => raise Fail "TODO"
 
-  structure IntArrayOrdered
-    :> ORDERED where type t = (int A.array) = struct
-    type t = int A.array
-
-    fun compare (a1, a2) =
-      let
-        fun compare' (n, m) =
-          case (n, m) of
-            (0, 0) => EQUAL
-          | (_, 0) => GREATER
-          | (0, _) => LESS
-          | (n, m) =>
-              (case Int.compare (A.sub (a1, n-1), A.sub (a2, m-1)) of
-                 EQUAL => compare' (n-1, m-1)
-               | ord => ord)
-      in
-        compare' (A.length a1, A.length a2)
-      end
-
-    fun eq (a1, a2) = EQUAL = compare (a1, a2)
-  end
-
-  structure AS = ListSet(structure Elem = IntArrayOrdered)
-  type array_set = AS.set
-
-  fun prArray ar =
+  val printSystem : system -> unit =
     let
-      fun prArray' () =
-        Array.appi (fn (i, x) => (print (Int.toString x ^ " | "); ())) ar
+      val prettySystem : system -> string =
+        fn sys =>
+          let
+            val prettyRow : int list -> string =
+              fn xs =>
+                "| " ^
+                (L.foldr op^ "" (intersperse " | " (L.map Int.toString xs)))
+                ^ "|"
+          in
+            L.foldr op^ "" (intersperse "\n" (L.map prettyRow sys))
+          end
     in
-      (prArray' (); print "\n")
+      print o prettySystem
     end
 
-  val toSet : (int vector) list -> array_set
-    = L.foldl (fn (x, y) => AS.insert y x) AS.empty
+  val example1 = [[~1, ~1], [1, 3], [2, ~2], [~3, ~1]]
 
-  (* Construct the basis vectors for an n-dimensional space. *)
-  val basis : int -> array_set =
-    fn n =>
+  (* Vector addition *)
+  infix <+>
+  val op<+> : int list * int list -> int list =
+    fn (xs, ys) => L.map op+ (LP.zip (xs, ys))
+
+  (* Scalar vector multiplication *)
+  infix <*>
+  val op<*> : int * int list -> int list =
+    fn (n, xs) => L.map (fn x => n * x) xs
+
+  (* Dot product of two vectors. *)
+  infix <^>
+  val op<^> : int list * int list -> int =
+    fn (xs, ys) => foldr op+ 0 (LP.map op* (xs, ys))
+
+  (* Matrix multiplication. *)
+  infix <@>
+  val op<@> : system * (int list) -> int list =
+    fn (a, xs) => foldr1 (curry op<+>) (LP.map op<*> (xs, a))
+
+  infix <#>
+  val op<#> = fn (xs, n) => L.nth (xs, n-1)
+
+  infix >?>
+
+  val intLessEq : int * int -> bool =
+    fn (m, n) =>
+      case Int.compare (m, n) of
+          EQUAL => true
+        | LESS  => true
+        | _     => false
+
+  val intNotEq  : int * int -> bool =
+    fn (m, n) =>
+      case Int.compare (m, n) of
+          LESS => true
+        | GREATER => true
+        | _ => false
+  fun set (x::xs) 1 y = y::xs
+    | set (x::xs) n y = x::set xs (n-1) y
+
+  fun op>?>((bs : int list), (cs : int list)) : bool =
+    let
+      val conjAll : bool list -> bool = L.all (fn x => x)
+      val disjAll : bool list -> bool = L.exists (fn x => x)
+    in
+      conjAll (LP.map intLessEq (bs, cs))
+      andalso disjAll (LP.map intNotEq (bs, cs))
+    end
+
+  val solve : system -> basis =
+    fn a =>
       let
-        val zeros  = L.map (fn i => vector i (replicate i 0)) (replicate n n)
-        val arrays = mapi (fn (i, xs) => (A.update (xs, i, 1); xs)) zeros
-        val result = toSet arrays
-        (*val _ = printLn (Int.toString (AS.size result) ^ " many arrays in the set.");*)
-        val _ = AS.app prArray result;
-      in
-        toSet arrays
-      end
-
-  val prod : int vector -> int vector -> int =
-    fn x => fn y =>
-      L.foldl op+ 0 (List.map (fn i => A.sub (x, i) * A.sub (y, i)) (indices x))
-
-  (*val lessEq : int vector -> int vector -> bool =*)
-    (*fn x => fn y => IntArrayOrdered.compare (x, y) = LESS*)
-
-  val lessEq : int vector -> int vector -> bool =
-    fn x => fn y =>
-      L.all (fn i => A.sub (x, i) <= A.sub (y, i)) (indices x)
-
-  (* Remove redundant branches. *)
-  val rmRedBrs : array_set -> array_set -> array_set =
-    fn a => fn m =>
-      let
-        val _ = printLn "`rmRedBrs` called"
-        val g = fn x => fn y => not (lessEq y x)
-        val f = fn x => List.all (g x) (AS.toList m)
-      in
-         toSet (L.filter f (AS.toList a))
-      end
-
-  val bfs : int vector -> int -> array_set -> array_set =
-    fn v => fn c => fn a =>
-      let
-        val _ = printLn "bfs"
-        val _ = prArray v
-        val f : int vector * array_set -> array_set =
-          fn (x, acc) =>
-            L.foldl (uncurry o flip $ AS.insert) acc
-              (comprehend
-                (fn j => (A.update (x, j, A.sub (x, j)+1); x))
-                (indices x)
-                (fn k => ((prod v x - c) * A.sub (v, k)) < 0))
-      in
-        AS.foldl f AS.empty a
-      end
-
-  fun newMinimalResults (v : int vector) (c : int) (a : array_set) (m : array_set) : int list list =
-    if AS.isEmpty a
-    then (printLn "nmr case 1"; [])
-    else
-      let
-        val _ = printLn "nmr case 2"
-        fun loop m [] =
-              let
-                val _ = printLn "Gubar."
-                val a''  = rmRedBrs (bfs v c a) m
-              in newMinimalResults v c a'' m end
-          | loop m (x::xs) =
-              if (prod v x = c) andalso not (AS.member m x) then
-                (printLn "Answer found!!!";
-                 arrayToList x::loop (AS.insert m x) xs)
+        val q = L.length a
+        val isZero = L.all (fn x => x = 0)
+        val ee : int -> int list =
+          fn n => replicate (n-1) 0 @ [1] @ replicate (q-n) 0
+        fun solve' [] b = b
+          | solve' ((t, f)::p) b =
+              if isZero (a <@> t) andalso not (isZero t) then
+                solve' p (t::b)
               else
-                loop m xs
+                let
+                  fun inner (p', f') (i : int) =
+                    let
+                      fun isMin [] t = true
+                        | isMin (b::bs) t = not (b >?> t) andalso isMin bs t
+                      val cond =
+                        (t <+> ee i) <> [1, 2, 1, 1]
+                        andalso ((t <+> ee i) <> [2, 2, 2, 1])
+                        andalso ((t <+> ee i) <> [3, 3, 1, 1])
+                        andalso ((t <+> ee i) <> [3, 2, 2, 1])
+                        andalso not (f' <#> i)
+                        andalso
+                          ((((a <@> t) <^> (a <#> i)) < 0
+                              andalso isMin b (t <+> ee i))
+                            orelse isZero t)
+                    in
+                      if cond then
+                        ((t <+> ee i, f')::p', set f' i true)
+                      else
+                        (p', f')
+                    end
+                  val p' =
+                    #1 (L.foldl (uncurry (flip inner)) ([], f) ((tl o range) q))
+                in
+                  solve' (p' @ p) b
+                end
       in
-        loop m (AS.toList a)
+        solve' [(replicate q 0, replicate q false)] []
       end
 
-  val solve :  int list -> int -> int list list =
-    fn v => fn c =>
-      let
-        val n = L.length v
-        val _ = printLn ("[solve] n = " ^ Int.toString n)
-        val bases = basis n
-        val _ =
-          if AS.isEmpty bases then
-            printLn "[1] bases is empty"
-          else
-            printLn "[1] bases is _not_ empty"
-        val arg1 = vector n v
-        val _ =
-          if AS.isEmpty bases then
-            printLn "[2] bases is empty"
-          else
-            printLn "[2] bases is _not_ empty"
-      in
-        newMinimalResults arg1 c bases AS.empty
-      end
+    fun main (name : string, args : string list) =
+      (printSystem (solve example1); 0)
 
-  val prSolution = fn s =>
-    let
-      val showSolution = fn (xss : int list list) =>
-        if L.null xss
-        then "No solutions"
-        else
-          (concat o intersperse "; " o
-            map (concat o intersperse ", " o map Int.toString)) xss
-    in
-      printLn ("RESULT: " ^ (showSolution s))
-    end
-
-  val _ = prSolution (solve [3, 5, 7, 9] 12)
+    val _ = SMLofNJ.exportFn ("solve", main)
 
 end
