@@ -83,7 +83,7 @@ structure Solver = struct
               else
                 let
                   fun set (x::xs) 1 y = y::xs
-                    | set (x::xs) n y = y::(set xs (n-1) y)
+                    | set (x::xs) n y = x::set xs (n-1) y
                   fun inner (p', f') (i : int) =
                     let
                       fun op>?>((bs : int list), (cs : int list)) : bool =
@@ -108,7 +108,7 @@ structure Solver = struct
                             orelse isZero t)
                     in
                       if cond then
-                        ((t <+> (ee i), f')::p, set f' i true)
+                        ((t <+> ee i, f')::p', set f' i true)
                       else
                         (p', f')
                     end
@@ -118,7 +118,7 @@ structure Solver = struct
                   solve' (p' @ p) b
                 end
       in
-        solve' [(replicate 0 q, replicate q false)] []
+        solve' [(replicate q 0, replicate q false)] []
       end
 
 end
