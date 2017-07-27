@@ -9,6 +9,23 @@ structure Solver = struct
   type basis  = int list list
   type stack  = (int list * bool list) list
 
+  val printSystem : system -> unit =
+    let
+      val prettySystem : system -> string =
+        fn sys =>
+          let
+            val prettyRow : int list -> string =
+              fn xs =>
+                "| " ^
+                (L.foldr op^ "" (intersperse " | " (L.map Int.toString xs)))
+                ^ "|"
+          in
+            L.foldr op^ "" (intersperse "\n" (L.map prettyRow sys))
+          end
+    in
+      print o prettySystem
+    end
+
   (* Vector addition *)
   infix <+>
   val op<+> : int list * int list -> int list =
@@ -27,7 +44,7 @@ structure Solver = struct
   (* Matrix multiplication. *)
   infix <@>
   val op<@> : system * (int list) -> int list =
-    fn (a, xs) => foldr1 (curry op<+>) (LP.map op<*> (xs, a))
+    fn (a, xs) => List.foldr op<+> [] (LP.map op<*> (xs, a))
 
   infix <#>
   val op<#> = fn (xs, n) => L.nth (xs, n-1)
