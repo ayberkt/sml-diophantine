@@ -32,6 +32,8 @@ structure Solver = struct
   infix <#>
   val op<#> = fn (xs, n) => L.nth (xs, n-1)
 
+  infix >?>
+
   val solve : system -> basis =
     fn a =>
       let
@@ -49,6 +51,9 @@ structure Solver = struct
                     | set (x::xs) n y = y::(set xs (n-1) y)
                   fun inner (p', f') (i : int) =
                     let
+                      fun op>?>(bs, cs) = raise Fail "TODO"
+                      fun isMin [] t = true
+                        | isMin (b::bs) t = not (b >?> t) andalso isMin bs t
                       val cond =
                         (t <+> ee i) <> [1, 2, 1, 1]
                         andalso ((t <+> ee i) <> [2, 2, 2, 1])
