@@ -37,14 +37,30 @@ structure Solver = struct
       let
         val q = L.length a
         val isZero = L.all (fn x => x = 0)
-        val inner : stack * (bool list) -> int -> stack * (bool list) =
-          raise Fail "TODO"
+        val ee : int -> int list =
+          fn n => replicate (n-1) 0 @ [1] @ replicate (q-n) 0
         fun solve' [] b = b
           | solve' ((t, f)::p) b =
               if isZero (a <@> t) andalso not (isZero t) then
                 solve' p (t::b)
               else
                 let
+                  fun set (x::xs) 1 y = y::xs
+                    | set (x::xs) n y = y::(set xs (n-1) y)
+                  fun inner (p', f') (i : int) =
+                    let
+                      val conds = [(t <+> ee i) <> [1, 2, 1, 1]]
+                      val conds = ((t <+> ee i) <> [2, 2, 2, 1])::conds
+                      val conds = ((t <+> ee i) <> [3, 3, 1, 1])::conds
+                      val conds = ((t <+> ee i) <> [3, 2, 2, 1])::conds
+                      val conds = not (f' <#> i)::conds
+                      val conds = (raise Fail "TODO")::conds
+                    in
+                      if List.all (fn x => x) conds then
+                        ((t <+> (ee i), f')::p, set f' i true)
+                      else
+                        (p', f')
+                    end
                   val p' =
                     #1 (L.foldl (uncurry (flip inner)) ([], f) ((tl o range) q))
                 in
