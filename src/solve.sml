@@ -5,6 +5,9 @@ structure Solver = struct
   structure LP = ListPair
   structure I  = Int
 
+  type system = int list list
+  type basis  = int list list
+  type stack  = int list * bool list
   infix <+>
   val op<+> : int list * int list -> int list =
     fn (xs, ys) => L.map op+ (LP.zip (xs, ys))
