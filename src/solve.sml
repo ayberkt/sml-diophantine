@@ -28,7 +28,7 @@ structure Solver = struct
               "![]!"
           end
     in
-      print o prettySystem
+      (fn () => print "\n") o print o prettySystem
     end
 
   val example1 = [[~1, ~1], [1, 3], [2, ~2], [~3, ~1]]
