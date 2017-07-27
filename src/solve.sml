@@ -22,7 +22,10 @@ structure Solver = struct
                 (L.foldr op^ "" (intersperse " | " (L.map Int.toString xs)))
                 ^ "|"
           in
-            L.foldr op^ "" (intersperse "\n" (L.map prettyRow sys))
+            if not (null sys) then
+              L.foldr op^ "" (intersperse "\n" (L.map prettyRow sys))
+            else
+              "![]!"
           end
     in
       print o prettySystem
