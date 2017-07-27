@@ -33,6 +33,25 @@ structure Solver = struct
   val op<#> = fn (xs, n) => L.nth (xs, n-1)
 
   val solve : system -> basis =
-    fn sys => raise Fail "TODO"
+    fn a =>
+      let
+        val q = L.length a
+        val isZero = L.all (fn x => x = 0)
+        val inner : stack * (bool list) -> int -> stack * (bool list) =
+          raise Fail "TODO"
+        fun solve' [] b = b
+          | solve' ((t, f)::p) b =
+              if isZero (a <@> t) andalso not (isZero t) then
+                solve' p (t::b)
+              else
+                let
+                  val p' =
+                    #1 (L.foldl (uncurry (flip inner)) ([], f) ((tl o range) q))
+                in
+                  solve' (p' @ p) b
+                end
+      in
+        solve' [(replicate 0 q, replicate q false)] []
+      end
 
 end
