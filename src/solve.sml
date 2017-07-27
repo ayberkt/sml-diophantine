@@ -8,6 +8,8 @@ structure Solver = struct
   type system = int list list
   type basis  = int list list
   type stack  = int list * bool list
+
+  (* Vector addition *)
   infix <+>
   val op<+> : int list * int list -> int list =
     fn (xs, ys) => L.map op+ (LP.zip (xs, ys))
