@@ -7,7 +7,7 @@ structure Solver = struct
 
   type system = int list list
   type basis  = int list list
-  type stack  = int list * bool list
+  type stack  = (int list * bool list) list
 
   (* Vector addition *)
   infix <+>
