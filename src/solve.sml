@@ -60,7 +60,10 @@ structure Solver = struct
                         andalso ((t <+> ee i) <> [3, 3, 1, 1])
                         andalso ((t <+> ee i) <> [3, 2, 2, 1])
                         andalso (f' <#> i)
-                        andalso (raise Fail "TODO")
+                        andalso
+                          ((((a <@> t) <^> (a <#> i)) < 0
+                              andalso isMin b (t <+> ee i))
+                            orelse isZero t)
                     in
                       if cond then
                         ((t <+> (ee i), f')::p, set f' i true)
