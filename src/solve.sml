@@ -20,8 +20,8 @@ structure Solver = struct
     fn (n, xs) => L.map (fn x => n * x) xs
 
   (* Dot product of two vectors. *)
-  infix <dot>
-  val op<dot> : int list * int list -> int =
+  infix <^>
+  val op<^> : int list * int list -> int =
     fn (xs, ys) => foldr op+ 0 (LP.map op* (xs, ys))
 
   (* Matrix multiplication. *)
