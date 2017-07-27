@@ -49,14 +49,15 @@ structure Solver = struct
                     | set (x::xs) n y = y::(set xs (n-1) y)
                   fun inner (p', f') (i : int) =
                     let
-                      val conds = [(t <+> ee i) <> [1, 2, 1, 1]]
-                      val conds = ((t <+> ee i) <> [2, 2, 2, 1])::conds
-                      val conds = ((t <+> ee i) <> [3, 3, 1, 1])::conds
-                      val conds = ((t <+> ee i) <> [3, 2, 2, 1])::conds
-                      val conds = not (f' <#> i)::conds
-                      val conds = (raise Fail "TODO")::conds
+                      val cond =
+                        (t <+> ee i) <> [1, 2, 1, 1]
+                        andalso ((t <+> ee i) <> [2, 2, 2, 1])
+                        andalso ((t <+> ee i) <> [3, 3, 1, 1])
+                        andalso ((t <+> ee i) <> [3, 2, 2, 1])
+                        andalso (f' <#> i)
+                        andalso (raise Fail "TODO")
                     in
-                      if List.all (fn x => x) conds then
+                      if cond then
                         ((t <+> (ee i), f')::p, set f' i true)
                       else
                         (p', f')
