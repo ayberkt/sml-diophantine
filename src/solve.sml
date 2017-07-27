@@ -9,6 +9,8 @@ structure Solver = struct
   type basis  = int list list
   type stack  = (int list * bool list) list
 
+  val TODO = fn () => raise Fail "TODO"
+
   val printSystem : system -> unit =
     let
       val prettySystem : system -> string =
