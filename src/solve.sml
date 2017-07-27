@@ -31,4 +31,8 @@ structure Solver = struct
 
   infix <#>
   val op<#> = fn (xs, n) => L.nth (xs, n-1)
+
+  val solve : system -> basis =
+    fn sys => raise Fail "TODO"
+
 end
