@@ -34,6 +34,20 @@ structure Solver = struct
 
   infix >?>
 
+  val intLessEq : int * int -> bool =
+    fn (m, n) =>
+      case Int.compare (m, n) of
+          EQUAL => true
+        | LESS  => true
+        | _     => false
+
+  val intNotEq  : int * int -> bool =
+    fn (m, n) =>
+      case Int.compare (m, n) of
+          LESS => true
+        | GREATER => true
+        | _ => false
+
   val solve : system -> basis =
     fn a =>
       let
@@ -51,7 +65,14 @@ structure Solver = struct
                     | set (x::xs) n y = y::(set xs (n-1) y)
                   fun inner (p', f') (i : int) =
                     let
-                      fun op>?>(bs, cs) = raise Fail "TODO"
+                      fun op>?>((bs : int list), (cs : int list)) : bool =
+                        let
+                          val conjAll : bool list -> bool = L.all (fn x => x)
+                          val disjAll : bool list -> bool = L.exists (fn x => x)
+                        in
+                          conjAll (LP.map intLessEq (bs, cs))
+                          andalso disjAll (LP.map intNotEq (bs, cs))
+                        end
                       fun isMin [] t = true
                         | isMin (b::bs) t = not (b >?> t) andalso isMin bs t
                       val cond =
