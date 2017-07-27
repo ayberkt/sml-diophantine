@@ -102,7 +102,7 @@ structure Solver = struct
                         andalso ((t <+> ee i) <> [2, 2, 2, 1])
                         andalso ((t <+> ee i) <> [3, 3, 1, 1])
                         andalso ((t <+> ee i) <> [3, 2, 2, 1])
-                        andalso (f' <#> i)
+                        andalso not (f' <#> i)
                         andalso
                           ((((a <@> t) <^> (a <#> i)) < 0
                               andalso isMin b (t <+> ee i))
