@@ -127,7 +127,4 @@ structure Solver = struct
 
     fun main (name : string, args : string list) =
       (printSystem (solve example1); 0)
-
-    val _ = SMLofNJ.exportFn ("solve", main)
-
 end
