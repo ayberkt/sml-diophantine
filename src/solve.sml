@@ -68,6 +68,17 @@ structure Solver = struct
           LESS => true
         | GREATER => true
         | _ => false
+  fun set (x::xs) 1 y = y::xs
+    | set (x::xs) n y = x::set xs (n-1) y
+
+  fun op>?>((bs : int list), (cs : int list)) : bool =
+    let
+      val conjAll : bool list -> bool = L.all (fn x => x)
+      val disjAll : bool list -> bool = L.exists (fn x => x)
+    in
+      conjAll (LP.map intLessEq (bs, cs))
+      andalso disjAll (LP.map intNotEq (bs, cs))
+    end
 
   val solve : system -> basis =
     fn a =>
@@ -82,18 +93,8 @@ structure Solver = struct
                 solve' p (t::b)
               else
                 let
-                  fun set (x::xs) 1 y = y::xs
-                    | set (x::xs) n y = x::set xs (n-1) y
                   fun inner (p', f') (i : int) =
                     let
-                      fun op>?>((bs : int list), (cs : int list)) : bool =
-                        let
-                          val conjAll : bool list -> bool = L.all (fn x => x)
-                          val disjAll : bool list -> bool = L.exists (fn x => x)
-                        in
-                          conjAll (LP.map intLessEq (bs, cs))
-                          andalso disjAll (LP.map intNotEq (bs, cs))
-                        end
                       fun isMin [] t = true
                         | isMin (b::bs) t = not (b >?> t) andalso isMin bs t
                       val cond =
