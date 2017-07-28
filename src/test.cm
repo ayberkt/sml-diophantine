@@ -1,6 +1,0 @@
-Group is
-  ../lib/cmlib/cmlib.cm
-  /Users/ayberkt/code/sml-testing/testing.cm
-  utils.sml
-  solve.sml
-  test.sml
