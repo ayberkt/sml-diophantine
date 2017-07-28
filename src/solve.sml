@@ -89,8 +89,7 @@ structure Solver = struct
       let
         val q = L.length a
         val isZero = L.all (fn x => x = 0)
-        val ee : int -> int list =
-          fn n => replicate (n-1) 0 @ [1] @ replicate (q-n) 0
+        val ee = fn n => replicate (n-1) 0 @ [1] @ replicate (q-n) 0
         fun solve' [] b = b
           | solve' ((t, f)::p) b =
               if isZero (a <@> t) andalso not (isZero t) then
