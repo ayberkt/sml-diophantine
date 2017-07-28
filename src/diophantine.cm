@@ -2,3 +2,4 @@ Group is
   ../lib/cmlib/cmlib.cm
   utils.sml
   solve.sml
+  tests.sml
