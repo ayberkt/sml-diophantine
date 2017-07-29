@@ -2,3 +2,4 @@ src/diophantine/.cm
 src/diophantine
 solve.x86-darwin
 *.x86-darwin
+solve
