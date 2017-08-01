@@ -33,6 +33,8 @@ structure Solver = struct
 
   val example1 = [[~1, ~1], [1, 3], [2, ~2], [~3, ~1]]
   val example2 = [[~1], [1], [2], [~3]]
+  val example3 = [[~20], [2]]
+  val example4 = [[1, 2], [2, ~1], [~3, ~3], [~2, 2], [~4, 5]]
 
   (* Vector addition *)
   infix <+>
@@ -126,5 +128,5 @@ structure Solver = struct
       end
 
     fun main (name : string, args : string list) =
-      (printSystem (solve example2); 0)
+      (printSystem (solve example4); 0)
 end
